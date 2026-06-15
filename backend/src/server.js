@@ -1,15 +1,27 @@
 import express from 'express';
  // Load environment variables from .env file
-
+import path from 'path';
 import { ENV } from './lib/env.js';
 
 const app = express();
 
-console.log(ENV.PORT); // Accessing the PORT variable from .env
-console.log(ENV.DB_URL); // Accessing the DB_URL variable from .env
+const __dirname = path.resolve();
 
 app.get("/health", (req, res) => {
     res.status(200).json({ msg: "api is healthy" });
 });
+
+app.get("/books", (req, res) => {
+    res.status(200).json({ msg: "this is a books endpoint" });
+});
+
+// make our app ready for deployment
+if (ENV.NODE_ENV === "production") {
+    app.use(express.static(path.join(__dirname,"../frontend/dist")));
+
+    app.get("/{*any}", (req, res) => {
+        res.sendFile(path.join(__dirname,"../frontend","dist","index.html"));
+    });
+}
 
 app.listen(ENV.PORT, () => console.log("Server is running on port " , ENV.PORT));
