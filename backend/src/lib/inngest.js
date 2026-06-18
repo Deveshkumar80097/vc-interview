@@ -1,6 +1,7 @@
 import {Inngest } from 'inngest';
 import  {connectDB} from './db.js';
 import User from '../models/user.js';
+import { upsertStreamUser, deleteStreamUser } from './stream.js';
 
 export const inngest = new Inngest({id: "vc-interview-app"});
 
@@ -18,7 +19,7 @@ const syncUser = inngest.createFunction(
         };
         await User.create(newUser);
 
-        awaitupsertStreamUser({
+        await upsertStreamUser({
             id:newUser.clerkId.toString(),
             name: newUser.name,
             image: newUser.profileImage,
